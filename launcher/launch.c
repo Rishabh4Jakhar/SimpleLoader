@@ -1,6 +1,6 @@
 #include "../loader/loader.h"
 
-int main(int argc, char** argv) 
+int main(int argc, char  **argv) 
 {
   // Wrong Usage of Command
   if(argc != 2) {
@@ -19,7 +19,7 @@ int main(int argc, char** argv)
   // Closing the file
   fclose(elf);
   // 2. passing it to the loader for carrying out the loading/execution
-  load_and_run_elf(argv[1]);
+  load_and_run_elf(&argv[1]);
   // 3. invoke the cleanup routine inside the loader  
   loader_cleanup();
   return 0;
