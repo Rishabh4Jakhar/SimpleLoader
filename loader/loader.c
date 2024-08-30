@@ -15,7 +15,7 @@ void loader_cleanup() {
  * Load and run the ELF executable file
  */
 void load_and_run_elf(char** exe) {
-  fd = open(argv[1], O_RDONLY); // argv[1] contains the path to the ELF file
+  fd = open(*exe, O_RDONLY); // argv[1] contains the path to the ELF file
 // 1. Load entire binary content into the memory from the ELF file.
   off_t fd_size = lseek(fd, 0, SEEK_END); // We calculate the size of the file by offsetting to the end 
   lseek(fd, 0, SEEK_SET);
@@ -33,13 +33,13 @@ void load_and_run_elf(char** exe) {
   ssize_t f_read = read(fd, heap_mem, fd_size); // Reading the file descriptor
   
   // Checking if file read was successful
-  if (file_read < 0 )
+  if (f_read < 0 )
   {
     perror("Error: File read operation failed");
     free(heap_mem);
     exit(1);
   }
-  else if((size_t)file_read != fd_size)
+  else if((size_t)f_read != fd_size)
   {  perror("Error: File read operation failed");
     free(heap_mem);
     exit(1);}
