@@ -8,7 +8,11 @@ int fd; // File descriptor object
  * release memory and other cleanups
  */
 void loader_cleanup() {
-  
+  ehdr = NULL;
+  free(ehdr);
+  phdr = NULL;
+  free(phdr);
+  // Freeing all the memory allocated
 }
 
 /*
