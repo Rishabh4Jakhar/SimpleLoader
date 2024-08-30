@@ -66,11 +66,46 @@ void load_and_run_elf(char** exe) {
   int i = 0;
   // 2. Iterate through the PHDR table and find the section of PT_LOAD 
   //    type that contains the address of the entrypoint method in fib.c
-  // 3. Allocate memory of the size "p_memsz" using mmap function 
-  //    and then copy the segment content
-  // 4. Navigate to the entrypoint address into the segment loaded in the memory in above step
-  // 5. Typecast the address to that of function pointer matching "_start" method in fib.c.
+  
+  while (i < tot_phdr) {
+    // Checking if the type is PT_LOAD
+    if (tmp->p_type == PT_LOAD) {
+      vir_mem = mmap(0, tmp->p_memsz, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+      // 3. Allocate memory of the size "p_memsz" using mmap function 
+      //    and then copy the segment content
+      memcpy(vir_mem, heap_mem + tmp->p_offset, tmp->p_memsz); 
+      // Copying the segment content into vir_mem
+
+      if (vir_mem == MAP_FAILED) // Checking if memory mapping was successful
+      { perror("Error: Memory mapping failed");
+        exit(1); }
+
+      // 4. Navigate to the entrypoint address into the segment loaded in the memory in above step
+
+      entry_addrs = vir_mem + (entry_p - tmp->p_vaddr); // Calculating the entry address
+
+      // Breaking if entry address is not inside vir_mem
+      if (entry_addrs <= (vir_mem + tmp->p_memsz) && entry_addrs >= vir_mem) // Checking if entry address is within the segment
+      { 
+        break;
+       }
+    }
+  i++;
+  tmp++;
+}
+
+if (entry_addrs == NULL) // Checking if entry address is NULL
+{ printf("Error: Entry address is NULL");
+  free(heap_mem);
+  exit(1);
+}
+else {
+  // 5. Typecast the address to that of function pointer matching "_start" method in fib.c.  
+  int (*_start)() = (int (*)())entry_addrs; 
+
   // 6. Call the "_start" method and print the value returned from the "_start"
-  int result = _start();
-  printf("User _start return value = %d\n",result);
+  int result = _start(); // Calling _start
+  printf("User _start return value = %d\n",result); 
+}
+close(fd); // Closing file descriptor
 }
