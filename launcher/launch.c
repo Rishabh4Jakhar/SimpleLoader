@@ -16,6 +16,8 @@ int main(int argc, char** argv)
     printf("Error: ELF File didn't open\n");
     exit(1);
   }
+  // Closing the file
+  fclose(elf);
   // 2. passing it to the loader for carrying out the loading/execution
   load_and_run_elf(argv[1]);
   // 3. invoke the cleanup routine inside the loader  
